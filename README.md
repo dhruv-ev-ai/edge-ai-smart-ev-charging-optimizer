@@ -163,8 +163,7 @@ The prototype circuit consists of:
 
 📷 Circuit
 
-"Edge AI Smart EV Charging Optimizer Circuit" (https://github.com/dhruv-ev-ai/edge-ai-smart-ev-charging-optimizer/blob/main/IMG-20260929-WA0004.jpg)
-
+"Edge AI Smart EV Charging Optimizer Circuit" (IMG-20260929-WA0007.jpg)
 Circuit Functions
 
 Component| Function
