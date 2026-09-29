@@ -2,42 +2,46 @@
 
 «An ESP32-based Edge AI system for intelligent, real-time EV charging control and monitoring.»
 
-The Edge AI Smart EV Charging Optimizer is an embedded EV charging management system designed to make charging decisions locally at the edge.
+The Edge AI Smart EV Charging Optimizer is an embedded EV charging management prototype designed to perform intelligent charging decisions locally at the edge.
 
-The system monitors voltage and current, calculates charging power, evaluates the charging condition using Edge AI decision logic, and controls the EV charging path through a relay. Real-time operating information can also be transmitted to ThingsBoard Cloud using MQTT for remote monitoring and visualization.
+The system monitors voltage and current, calculates charging power, evaluates the charging condition using Edge AI decision logic, and controls the EV charging path through a relay. Relevant operating data can also be transmitted to ThingsBoard Cloud using MQTT for real-time monitoring and visualization.
 
 ---
 
 🚗 Project Overview
 
-The system is designed around an ESP32 microcontroller that acts as the main edge controller.
+The system is built around an ESP32 DevKit, which acts as the main edge controller.
 
-Instead of depending completely on cloud-based processing, the charging decision can be performed locally on the ESP32. This enables faster response and reduces dependency on continuous cloud connectivity.
+The ESP32 receives charging-related inputs, processes the data locally, determines the charging state, controls the corresponding status indicators and relay, and sends selected telemetry to the ThingsBoard dashboard.
 
-Core Decision States
+The local decision-making approach reduces dependence on continuous cloud connectivity for immediate charging-control decisions.
 
-Status| LED Indicator| Meaning
-🟢 BAY FREE| Green LED| Charging bay is available / EV is not charging
+🔋 Charging Status
+
+Status| Indicator| Meaning
+🟢 BAY FREE| Green LED| Charging bay is available and EV charging is inactive
 🟡 CHARGING| Yellow LED| EV charging is currently active
-🔴 OVERLOAD| Red LED| Current/power condition exceeds the defined limit
-🔌 RELAY| Relay| Controls the EV charging load
+🔴 OVERLOAD| Red LED| Current/power condition has exceeded the defined limit
+🔌 RELAY| Relay| Controls the EV charging load/control path
 
 ---
 
 ✨ Key Features
 
 - ⚡ Real-time voltage monitoring
-- 🔋 Real-time current monitoring
+- 🔌 Real-time current monitoring
 - 📊 Charging power calculation
-- 🧠 Edge AI-based charging decision
-- 🚗 EV charging load control
+- 🧠 Edge AI-based decision logic
+- 🚗 EV charging-state management
 - 🔌 Relay-based charging control
-- 🟢 Green / 🟡 Yellow / 🔴 Red status indication
+- 🟢 Green LED for Bay Free
+- 🟡 Yellow LED for Charging
+- 🔴 Red LED for Overload
 - 📡 MQTT communication
 - ☁️ ThingsBoard Cloud monitoring
 - 💻 ESP32-based embedded implementation
-- 🧪 Wokwi simulation
-- 🌐 Reduced dependency on cloud-based decision making
+- 🧪 Wokwi-based simulation
+- 🌐 Local edge decision-making with reduced cloud dependency
 
 ---
 
@@ -45,224 +49,239 @@ Status| LED Indicator| Meaning
 
 🧠 1. ESP32 DevKit
 
-ESP32 DevKit (38/30-pin board) is used as the main controller.
+The ESP32 DevKit (38/30-pin board) is used as the main controller of the system.
 
-It is responsible for:
+Functions
 
-- Reading voltage and current inputs
-- Processing sensor data
-- Running the local decision logic
-- Controlling LEDs
-- Controlling the relay
-- Communicating with the cloud through Wi-Fi/MQTT
+- Reads voltage and current inputs
+- Processes the input data
+- Performs local charging decision logic
+- Calculates charging power
+- Controls the status LEDs
+- Controls the relay
+- Communicates with ThingsBoard through Wi-Fi and MQTT
 
 ---
 
 ⚡ 2. Voltage Potentiometer
 
-The potentiometer is used as an analog voltage input for the EV charging simulation.
+The voltage potentiometer provides an analog voltage input for the EV charging simulation.
 
-The ESP32 reads the potentiometer through an ADC input and converts the value into a representative charging voltage.
+The ESP32 reads the potentiometer through an ADC input and converts the ADC value into a representative charging-voltage value.
 
-Purpose:
+Purpose
 
-«Simulates changing EV charging voltage conditions.»
+«Simulates changing EV charging voltage conditions during testing.»
 
 ---
 
 🔌 3. Current Potentiometer
 
-The second potentiometer is used as an analog current input.
+The second potentiometer provides an analog current input.
 
-The ESP32 reads the ADC value and converts it into a representative charging current.
+The ESP32 reads the ADC value and converts it into a representative charging-current value.
 
-Purpose:
+Purpose
 
-«Simulates changing EV charging current conditions.»
+«Simulates changing EV charging current conditions during testing.»
 
 ---
 
 🟢 4. Green LED — BAY FREE
 
-The green LED indicates that the charging bay is available.
+The green LED represents an available charging bay.
 
 Green LED = BAY FREE
 
-It can indicate that:
+It indicates that:
 
-- No EV is currently charging
-- Charging load is inactive
-- The system is ready for the next charging session
+- EV charging is inactive
+- The charging load is not currently active
+- The charging bay is available
 
 ---
 
 🟡 5. Yellow LED — CHARGING
 
-The yellow LED indicates an active charging condition.
+The yellow LED represents an active charging condition.
 
 Yellow LED = CHARGING
 
 It indicates that:
 
 - EV charging is active
-- The charging relay is enabled
-- The system is operating under normal charging conditions
+- The charging relay/control path is enabled
+- The system is operating in the charging state
 
 ---
 
 🔴 6. Red LED — OVERLOAD
 
-The red LED indicates an overload or unsafe charging condition.
+The red LED represents an overload condition.
 
 Red LED = OVERLOAD
 
-It can be activated when the measured current/power exceeds the configured safe limit.
+It can be activated when the measured current or calculated power exceeds the configured limit.
 
-The system can then take an appropriate protection action through the relay/control logic.
+The system can then take the required protection/control action through the relay logic.
 
 ---
 
 🔌 7. Relay Module — EV Charging Control
 
-The relay acts as the switching/control interface for the EV charging load.
+The relay acts as the switching/control interface for the simulated EV charging load.
 
 The ESP32 controls the relay according to the charging decision.
 
-Conceptually:
+              ESP32
+                │
+                │ Control Signal
+                ▼
+             ┌──────┐
+             │ Relay│
+             └──┬───┘
+                │
+                │ Switching
+                ▼
+        EV Charging Load
 
-ESP32
-  │
-  │ Control Signal
-  ▼
-Relay
-  │
-  │ Switching
-  ▼
-EV Charging Load
-
-«⚠️ In the simulation, the relay represents the control of the EV charging load. A real EV charging system requires appropriate contactors, protection devices, isolation, and safety-rated hardware rather than directly switching a high-power EV load with a hobby relay module.»
+«⚠️ Safety Note: In this prototype/simulation, the relay represents the control of the EV charging load. Real EV charging infrastructure requires appropriately rated contactors, protection devices, isolation, wiring, and safety systems. A hobby relay module should not be directly used to switch a high-power EV charging load.»
 
 ---
 
-🔧 Circuit / Wiring
+🔧 Circuit Diagram
 
-The circuit is implemented using the ESP32, two analog potentiometers, three status LEDs and a relay.
+The prototype circuit consists of:
 
-📷 Circuit Diagram
+- ESP32 DevKit
+- Voltage potentiometer
+- Current potentiometer
+- Green LED — Bay Free
+- Yellow LED — Charging
+- Red LED — Overload
+- Relay module — Charging control
+
+📷 Circuit
 
 "Edge AI Smart EV Charging Optimizer Circuit" (IMG-20260929-WA0007.jpg)
 
-Circuit functions:
+Circuit Functions
 
-- Voltage potentiometer → ESP32 ADC
-- Current potentiometer → ESP32 ADC
-- Green LED → Bay Free indication
-- Yellow LED → Charging indication
-- Red LED → Overload indication
-- Relay → EV charging load control
-- ESP32 → Main processing and control unit
+Component| Function
+⚡ Voltage Potentiometer| Simulates charging voltage
+🔌 Current Potentiometer| Simulates charging current
+🟢 Green LED| Bay Free
+🟡 Yellow LED| Charging
+🔴 Red LED| Overload
+🔌 Relay| EV charging load/control
+🧠 ESP32| Processing and control
 
 ---
 
 ⚙️ Operating Logic
 
-The system continuously monitors the simulated charging parameters.
+The system continuously monitors the simulated charging parameters and evaluates the charging condition.
 
-        START
-          │
-          ▼
-   Read Voltage
-          │
-          ▼
-    Read Current
-          │
-          ▼
- Calculate Power
-          │
-          ▼
-   Edge AI Decision
-          │
-    ┌─────┼─────┐
-    │     │     │
-    ▼     ▼     ▼
-  FREE  CHARGE OVERLOAD
-    │     │     │
-    ▼     ▼     ▼
- Green Yellow  Red
-  LED    LED    LED
-    │     │     │
-    └─────┼─────┘
-          ▼
-   Control Relay
-          │
-          ▼
-   Send Telemetry
-          │
-          ▼
-     ThingsBoard
+                    START
+                      │
+                      ▼
+               Read Voltage
+                      │
+                      ▼
+                Read Current
+                      │
+                      ▼
+               Calculate Power
+                      │
+                      ▼
+             Edge AI Decision
+                      │
+             ┌────────┼────────┐
+             │        │        │
+             ▼        ▼        ▼
+           FREE    CHARGING  OVERLOAD
+             │        │        │
+             ▼        ▼        ▼
+          🟢 LED    🟡 LED    🔴 LED
+             │        │        │
+             └────────┼────────┘
+                      ▼
+                Control Relay
+                      │
+                      ▼
+                Send Telemetry
+                      │
+                      ▼
+              ThingsBoard Cloud
 
 ---
 
 🧠 Edge AI Decision Layer
 
-The key feature of this project is the local decision-making layer.
+A key part of the project is the local decision-making layer.
 
 The ESP32 receives the charging parameters and evaluates the operating condition locally.
 
-Depending on the input conditions, the system can determine an appropriate charging state such as:
+Based on the defined decision logic, the system can determine an appropriate charging response such as:
 
 ALLOW
 THROTTLE
 DEFER
 
-This approach reduces the need to send every decision to the cloud before taking action.
+Decision Flow
 
-Example
+       Voltage + Current
+                │
+                ▼
+        Edge AI Decision
+                │
+                ▼
+        Charging Condition
+                │
+       ┌────────┼────────┐
+       ▼        ▼        ▼
+    ALLOW    THROTTLE   DEFER
+       │        │        │
+       └────────┼────────┘
+                ▼
+          Relay / Control
 
-Voltage + Current
-       │
-       ▼
-   Edge AI Model
-       │
-       ▼
- Decision Output
-       │
- ┌─────┼────────┐
- ▼     ▼        ▼
-ALLOW THROTTLE DEFER
+This architecture allows immediate control decisions to be made locally instead of requiring every control decision to be processed by the cloud.
 
 ---
 
 📡 IoT Communication
 
-After local processing, relevant operating data can be transmitted using MQTT.
+The system uses Wi-Fi and MQTT to transmit relevant operating data to ThingsBoard Cloud.
 
-ESP32
-  │
-  │ Wi-Fi
-  ▼
- MQTT
-  │
-  ▼
-ThingsBoard Cloud
-  │
-  ▼
-Dashboard
+             ESP32
+               │
+               │ Wi-Fi
+               ▼
+              MQTT
+               │
+               ▼
+       ThingsBoard Cloud
+               │
+               ▼
+           Dashboard
 
-The cloud dashboard can be used for monitoring parameters such as:
+Dashboard Monitoring
+
+The ThingsBoard dashboard can be used to monitor:
 
 - ⚡ Voltage
 - 🔌 Current
-- 🔋 Power
+- 📊 Power
 - 🚗 Charging status
 - 🧠 AI decision
 - 🚨 Overload status
 
 ---
 
-📊 Charging Power
+📊 Charging Power Calculation
 
-The charging power is calculated from voltage and current:
+The charging power is calculated using:
 
 [
 P = V \times I
@@ -270,7 +289,7 @@ P = V \times I
 
 Where:
 
-- P = Power in watts (W)
+- P = Charging power in watts (W)
 - V = Voltage in volts (V)
 - I = Current in amperes (A)
 
@@ -281,102 +300,107 @@ The calculated power can be used as an additional parameter for charging-state e
 🛠️ Technology Stack
 
 Category| Technology
-Microcontroller| ESP32
-Programming| C/C++
-Simulation| Wokwi
-Communication| MQTT
-Cloud Platform| ThingsBoard
-Edge Processing| Edge AI
-Hardware Control| Relay
-Inputs| Voltage & Current analog inputs
-Indicators| Green / Yellow / Red LEDs
+🧠 Microcontroller| ESP32 DevKit
+💻 Programming| C/C++
+🧪 Simulation| Wokwi
+📡 Communication| MQTT
+☁️ Cloud Platform| ThingsBoard
+🤖 Edge Processing| Edge AI Decision Logic
+🔌 Control| Relay Module
+⚡ Inputs| Voltage & Current Analog Inputs
+💡 Indicators| Green / Yellow / Red LEDs
 
 ---
 
 🚀 Project Workflow
 
-Voltage Input ─┐
-               │
-Current Input ─┤
-               ▼
-            ESP32
-               │
-               ▼
-        Edge AI Processing
-               │
-               ▼
-       Charging Decision
-               │
-       ┌───────┼────────┐
-       ▼       ▼        ▼
-     ALLOW  THROTTLE   DEFER
-       │       │        │
-       └───────┼────────┘
-               ▼
-          Relay Control
-               │
-               ▼
-        EV Charging Load
-               │
-               ▼
-        MQTT Telemetry
-               │
-               ▼
-       ThingsBoard Cloud
+      Voltage Input ─────┐
+                         │
+      Current Input ─────┤
+                         ▼
+                      ESP32
+                         │
+                         ▼
+                Edge AI Processing
+                         │
+                         ▼
+                 Charging Decision
+                         │
+              ┌──────────┼──────────┐
+              ▼          ▼          ▼
+           ALLOW      THROTTLE     DEFER
+              │          │          │
+              └──────────┼──────────┘
+                         ▼
+                    Relay Control
+                         │
+                         ▼
+                 EV Charging Load
+                         │
+                         ▼
+                  MQTT Telemetry
+                         │
+                         ▼
+                ThingsBoard Cloud
 
 ---
 
 🧪 Simulation
 
-The project can be tested using Wokwi before hardware deployment.
+The project can be tested in Wokwi before physical hardware deployment.
 
-The simulation allows the charging conditions to be changed through the voltage and current potentiometers while observing the ESP32's response through the LEDs and relay.
+The voltage and current potentiometers can be adjusted to simulate different charging conditions. The ESP32 processes these inputs and responds through the LEDs and relay according to the configured decision logic.
 
 Simulation Demonstrates
 
 - Analog input acquisition
-- Voltage/current simulation
+- Voltage simulation
+- Current simulation
+- Charging power calculation
 - Charging-state detection
 - Overload detection
 - LED status indication
 - Relay control
-- ESP32 decision logic
+- ESP32 local decision-making
+- MQTT telemetry transmission
 
 ---
 
-📸 Project Images
+📸 Project Dashboard
 
-ThingsBoard Dashboard
+The ThingsBoard dashboard provides a visual representation of the EV charging system and its real-time operating parameters.
 
 "ThingsBoard Dashboard" (IMG-20260929-WA0004.jpg)
 
 ---
 
-🎯 Applications
+🎯 Potential Applications
 
 The concept can be extended to:
 
 - 🚗 EV charging stations
-- 🅿️ Smart parking and charging bays
+- 🅿️ Smart EV charging bays
 - ⚡ Charging-load management
 - 🔋 Smart energy management
 - 🏢 Commercial EV charging infrastructure
-- 🌐 IoT-enabled charging stations
+- 🌐 IoT-enabled charging systems
+- 🔌 Multi-bay EV charging management
 
 ---
 
 🔮 Future Improvements
 
-- Multi-EV charging coordination
-- Dynamic load balancing
-- Battery State-of-Charge integration
-- Renewable-energy-aware charging
-- Solar PV integration
-- Real-time electricity tariff integration
-- Advanced charging prediction
-- CAN-based EV communication
-- Hardware current/voltage sensors instead of potentiometer simulation
-- Integration with multiple charging bays
+- 🔋 Battery State-of-Charge (SoC) integration
+- 🚗 Multi-EV charging coordination
+- ⚡ Dynamic load balancing
+- ☀️ Solar PV integration
+- 🌱 Renewable-energy-aware charging
+- 💰 Real-time electricity tariff integration
+- 📈 Advanced charging prediction
+- 🔌 CAN-based EV communication
+- 📏 Dedicated voltage/current sensors instead of potentiometer-based simulation
+- 🅿️ Multiple charging-bay management
+- ☁️ Improved cloud-edge coordination
 
 ---
 
@@ -387,8 +411,9 @@ Dhruv Suthar
 Electrical Engineering
 Vishwakarma Government Engineering College (VGEC)
 
-Areas of Interest:
-⚡ Electric Vehicles • 🔋 Battery Management • ⚙️ Electric Drives • 🔌 Power Electronics • 🤖 Embedded Systems
+Areas of Interest
+
+⚡ Electric Vehicles • 🔋 Battery Management • ⚙️ Electric Drives • 🔌 Power Electronics • 💻 Embedded Systems
 
 ---
 
@@ -396,10 +421,16 @@ Areas of Interest:
 
 «Sense → Analyze → Decide → Control → Monitor»
 
-The project demonstrates how an ESP32-based Edge AI system can combine embedded control, EV charging management, IoT communication and local intelligent decision-making into a single prototype.
+This project demonstrates the integration of:
+
+Embedded Systems + Edge AI + EV Charging + IoT + MQTT + Cloud Monitoring
+
+using an ESP32-based prototype.
 
 ---
 
-📌 Note
+📌 Disclaimer
 
-This repository represents a prototype/simulation-oriented implementation of an intelligent EV charging optimizer. Actual EV charging infrastructure requires compliance with applicable electrical, charging, isolation, protection and safety standards.
+This project is a prototype/simulation-oriented implementation of an intelligent EV charging optimizer.
+
+The potentiometers are used to simulate voltage and current inputs. Actual EV charging infrastructure requires appropriately rated electrical equipment, protection systems, isolation, contactors, communication interfaces, and compliance with applicable electrical and EV-charging safety standards.
